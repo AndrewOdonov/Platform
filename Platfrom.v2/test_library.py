@@ -237,9 +237,7 @@ class RobotControl:
         :return: self.IR
         """
         try:
-            us_ir = self.ser.readline()
-            us_ir = us_ir.decode()
-            # print(US_IR)
+            us_ir = self.read_and_decode()
             if us_ir[:2] == 'SI':
                 self.IR = us_ir
         except Exception:
@@ -277,9 +275,7 @@ class RobotControl:
         :return: self.read_data_4_US
         """
         try:
-            us_ir = self.ser.readline()
-            us_ir = us_ir.decode()
-            # print(US_IR)
+            us_ir = self.read_and_decode()
             if us_ir[:2] == 'SU':
                 if us_ir[2] not in self.US_must_be_different_sensors:
                     self.US_must_be_different_sensors.append(us_ir[2])
@@ -358,8 +354,7 @@ class RobotControl:
 
     def accum_read(self):
         try:
-            pwr = self.ser.readline()
-            pwr = pwr.decode()
+            pwr = self.read_and_decode()
             if pwr[:2] == 'SA':
                 self.accum = pwr[2:5]
         except Exception:
@@ -374,9 +369,7 @@ class RobotControl:
         """
         # print(n_of_les)
         try:
-            data = self.ser.readline()
-            data = data.decode()
-            # print(all)
+            data = self.read_and_decode()
             if data[:2] == 'SF':
                 self.RFID = data[2:17]
                 print(self.RFID)
