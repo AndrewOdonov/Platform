@@ -6,7 +6,7 @@ import time
 
 
 class RobotControl:
-    """"settings"""
+    """settings"""
     ser = serial.Serial('/dev/ttyUSB0')
     ser.baudrate = 115200
     # resize frame
@@ -153,6 +153,10 @@ class RobotControl:
         self.encode_and_send_msg(msg)
 
     def stop_platform(self):
+        """
+        stop movement of robot
+        :return:
+        """
         self.encode_and_send_msg(self.msg_stop_driving)
 
     def turn_on_flashlight(self):
@@ -353,6 +357,10 @@ class RobotControl:
             sys.exit()
 
     def accum_read(self):
+        """
+        get power of battery
+        :return:
+        """
         try:
             pwr = self.read_and_decode()
             if pwr[:2] == 'SA':
