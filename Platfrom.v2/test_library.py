@@ -25,14 +25,10 @@ class RobotControl:
     """messages"""
     IR = 'SI010010010010010010010010E'
     IR_last_msg = 'ST0+00000+00000E'
-    US_must_be_different_sensors = []
     read_data_5_US = ['SUF030E\r\n', 'SUL030E\r\n', 'SUR030E\r\n', 'SUJ030E\r\n', 'SUK030E\r\n']
-    UV_last_value = 0
-    data_5_US = []
     RFID = 'SF000000000000000E'
     accum = 'please wait'
     RFID_file = '000'
-    frame = []
     RFID_msgs_les1 = {
         '000000000000000': 'Start!', '087008128181106': 'RFID1.txt',
         '135249194180008': 'RFID2.txt', '151116120090193': 'RFID3.txt',
@@ -88,7 +84,10 @@ class RobotControl:
             break
 
     def __init__(self):
-        pass
+        self.US_must_be_different_sensors = []
+        self.data_5_US = []
+        self.frame = []
+        self.UV_last_value = 0
 
     def encode_and_send_msg(self, msg):
         """
@@ -224,7 +223,7 @@ class RobotControl:
 
     def camera_reading_upper(self):
         """
-        кадра read frame from upper camera
+        read frame from upper camera
         :return: frame
         """
         ret, frame = self.cap_upper.read()
