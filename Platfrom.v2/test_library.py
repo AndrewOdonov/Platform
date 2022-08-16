@@ -14,7 +14,7 @@ class RobotControl:
     w = int(640 * percent / 100)
     h = int(480 * percent / 100)
     dim = (w, h)
-    # Parameters for delete distorsion
+    # Parameters for undistort frame from lower camera
     k = np.array([[669.53947377, 0., 316.57731188],
                   [0., 650.21491053, 291.96812174],
                   [0., 0., 1.]])
