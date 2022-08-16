@@ -9,9 +9,9 @@ while True:
     for i in us_data:
         us_sensors_and_values.update({i[2]: int(i[3:6])})
 
-    print('f', us_sensors_and_values.get('F'))
-    print('cl', us_sensors_and_values.get('K'))
-    print('cr', us_sensors_and_values.get('J'))
+    print('s3', us_sensors_and_values.get('F'))
+    print('s2', us_sensors_and_values.get('K'))
+    print('s1', us_sensors_and_values.get('J'))
 
     s3 = us_sensors_and_values.get('F')
     s2 = us_sensors_and_values.get('K')
