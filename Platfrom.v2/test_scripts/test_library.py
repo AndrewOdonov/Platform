@@ -7,7 +7,7 @@ import time
 """
 new formats of messages: data_from_ir = '<SI#1/34/58/120/201>'
                          data_from_us = '<SU#1/34/120/201/45>'
-                         turn_on_light = '<WFL#100>'
+                         turn_on_led_light = '<WFL#100>'
                          turn_on_uv_light = '<UFL#100>'
                          data_from_rfid = '<RFID#12345678920>'
                          data_from_battery = '<ACCUM#100>'
@@ -105,6 +105,15 @@ class RobotControl:
         except Exception:
             return None
 
+    def parse_data(self):
+        """
+        The function parses data from module of control
+        :return: data
+        """
+        data = self.read_and_decode()
+        data = data.strip('<>').replace('#', '')
+        return data
+
     def prepare_msg_of_one_wheel(self, wheel_speed):
         """
         prepare commands for set speed of wheels
@@ -159,9 +168,9 @@ class RobotControl:
         """
         self.encode_and_send_msg(self.MSG_STOP_DRIVE)
 
-    def turn_on_flashlight(self, brightness):
+    def turn_on_led_light(self, brightness):
         """
-        turn on flashlight
+        turn on led light
         :return:
         """
         brightness = str(brightness)
@@ -186,7 +195,7 @@ class RobotControl:
         print(np.mean(img))  # вывести уровень света на кадре
         return 'light' if is_light else 'dark'
 
-    def turn_on_uv(self, brightness):
+    def turn_on_uv_light(self, brightness):
         """
         turn on uv light
         :return:
