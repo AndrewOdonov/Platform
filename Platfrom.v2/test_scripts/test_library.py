@@ -51,10 +51,8 @@ class RobotControl:
 
     def __init__(self):
         self.US_must_be_different_sensors = []
-        self.data_5_US = []
         self.frame = []
         self.UV_last_value = None
-        self.data_from_ir = []
 
     def configure_serial_port(self):
         """
