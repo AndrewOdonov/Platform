@@ -14,6 +14,7 @@ new formats of messages: data_from_ir = '<SI#1/34/58/120/201>'
                          msg_servo = '<SERVO#-60>'
                          wheel = '<WHEEL#-100/60>'
 """
+parsed_data = [None, None]  # list for parsed data
 class RobotControl:
     """variables"""
     settings = None    # configuration serial port
@@ -105,14 +106,17 @@ class RobotControl:
         except Exception:
             return None
 
-    def parse_data(self):
+    def parse_data(e):
         """
         The function parses data from module of control
         :return: data
         """
-        data = self.read_and_decode()
-        data = data.strip('<>').replace('#', '')
-        return data
+        e = str(e)
+        data1 = e[1:-1].split('#')
+        data2 = data1[1].split('/')
+        parsed_data.append(data1[0])
+        parsed_data.append(data2)
+        return parsed_data
 
     def prepare_msg_of_one_wheel(self, wheel_speed):
         """
