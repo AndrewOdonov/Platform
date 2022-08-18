@@ -4,26 +4,34 @@ import numpy as np
 import sys
 import time
 
-
+"""
+new formats of messages: data_from_ir = '<SI#1/34/58/120/2001>'
+                         data_from_us = '<SU#1/34/120/2001/45>'
+                         turn_on_light = '<WFL#100>'
+                         turn_on_uv_light = '<UFL#100>'
+                         data_from_rfid = '<RFID#12345678920>'
+                         data_from_battery = '<ACCUM#100>'
+                         msg_servo = '<SERVO#-60>'
+                         wheel = '<WHEEL#-100/60>'
+"""
 class RobotControl:
     """variables"""
     settings = None    # configuration serial port
     mapx, mapy = None, None    # parameters of frame after deleting distorsion
-    resolution = []    # resolution of frame
-    data_from_ir = []  # data from ir sensors
-    data_from_us = []    # data from us sensors
+    resolution = [None, None]    # resolution of frame
+    data_from_ir = [None, None, None, None, None]  # data from ir sensors
+    data_from_us = [None, None, None, None, None]    # data from us sensors
     data_from_rfid = None    # data from rfid reader
     data_from_battery = None    # power of battery
-    msg_servo = 'SS0800000000000E'
-
+    msg_servo = '<SERVO#-60>'
     """messages"""
-    MSG_TURN_ON_LIGHT = 'SU++10000000000E'    # message to turn on flashlight
-    MSG_STOP_DRIVING = 'ST0+00000+00000E'    # message to stop robot
-    MSG_TURN_OFF_LIGHT = 'SU--00000000000E'    # message to turn off flashlight
+    MSG_TURN_ON_LIGHT = '<WFL#100>'    # message to turn on flashlight
+    MSG_STOP_DRIVE = '<WHEEL#0/0>'    # message to stop robot
+    MSG_TURN_OFF_LIGHT = '<WFL#0>'    # message to turn off flashlight
     direction_of_movements_robot = {
-                                    'LEFT': 'ST0-00300+00300E', 'RIGHT': 'ST0+00300-00300E',
-                                    'FORWARD': 'ST0+00200+00200E', 'STOP': 'ST0+00000+00000E',
-                                    'BACK': 'ST0-00200-00200E'
+                                    'LEFT': '<WHEEL#-100/100>', 'RIGHT': '<WHEEL#100/-100>',
+                                    'FORWARD': '<WHEEL#100/100>', 'STOP': '<WHEEL#0/0>',
+                                    'BACK': '<WHEEL#-100/-100>'
                                    }
     """checking"""
     for i in range(0, 3):
@@ -128,7 +136,7 @@ class RobotControl:
         right_wheel_msg = self.prepare_msg_of_one_wheel(right_wheel_speed)
         left_wheel_speed = str(left_wheel_speed)
         left_wheel_msg = self.prepare_msg_of_one_wheel(left_wheel_speed)
-        msg = 'ST0' + right_wheel_msg + left_wheel_msg + 'E'
+        msg = '<WHEEL#' + right_wheel_msg + '/' + left_wheel_msg + '>'
         print(msg)
         print(msg.encode('utf-8'))
         self.encode_and_send_msg(msg)
@@ -155,12 +163,14 @@ class RobotControl:
         """
         self.encode_and_send_msg(self.MSG_STOP_DRIVING)
 
-    def turn_on_flashlight(self):
+    def turn_on_flashlight(self, brightness):
         """
         turn on flashlight
         :return:
         """
-        self.encode_and_send_msg(self.msg_turn_on_fl)
+        brightness = str(brightness)
+        msg = '<WFL#' + brightness + '>'
+        self.encode_and_send_msg(msg)
 
     def turn_off_light(self):
         """
@@ -186,24 +196,19 @@ class RobotControl:
         :return:
         """
         brightness = str(brightness)
-        if len(str(brightness)) < 3:
-            brightness = (3 - len(str(brightness))) * '0' + str(brightness)
-        msg = 'SU++000' + brightness + '00000E'
+        msg = '<UFL#' + brightness + '>'
         self.encode_and_send_msg(msg)
 
-    # def set_angle_servo(self):
-    #     """
-    #     set angle of servo
-    #     :return:
-    #     """
-    #     # if len(str(grad)) < 3:
-    #     #     grad = (3-len(str(grad))) * '0' + str(grad)
-    #     # msg = 'SS'+str(grad)+'0000000000E'
-    #     # self.encode_and_send_msg(msg)
-    #
-    #     self.encode_and_send_msg(self.msg_servo)
+    def set_angle_servo(self, angle):
+        """
+        set angle of servo
+        :return:
+        """
+        angle = str(angle)
+        msg = '<SERVO#' + angle + '>'
+        self.encode_and_send_msg(msg)
 
-    set_angle_servo = lambda angle_servo: ['ss' + str(angle_servo) + '0000000000E']
+    # set_angle_servo = lambda angle_servo: ['<SERVO#' + str(angle_servo) + '>']
 
     def camera_reading_lower(self):
         """
@@ -231,7 +236,7 @@ class RobotControl:
         """
         try:
             us_ir = self.read_and_decode()
-            if us_ir[:2] == 'SI':
+            if us_ir[1:3] == 'SI':        #rewrite
                 self.data_from_ir = us_ir    # CHECK! + print()
         except Exception:
             pass
@@ -245,8 +250,8 @@ class RobotControl:
         """
         try:
             us_ir = self.read_and_decode()
-            if us_ir[:2] == 'SU':
-                if us_ir[2] not in self.US_must_be_different_sensors:
+            if us_ir[1:3] == 'SU':
+                if us_ir[2] not in self.US_must_be_different_sensors:     #rewrite! (254 - 261)
                     self.US_must_be_different_sensors.append(us_ir[2])
                     self.data_5_US.append(us_ir)
                     if len(self.US_must_be_different_sensors) == 5:
@@ -295,8 +300,8 @@ class RobotControl:
         """
         try:
             pwr = self.read_and_decode()
-            if pwr[:2] == 'SA':
-                self.data_from_battery = pwr[2:5]
+            if pwr[1:6] == 'ACCUM':
+                self.data_from_battery = pwr[7:-1]
         except Exception:
             pass
         finally:
@@ -309,8 +314,8 @@ class RobotControl:
         """
         try:
             data = self.read_and_decode()
-            if data[:2] == 'SF':
-                self.data_from_rfid = data[2:17]
+            if data[1:5] == 'RFID':
+                self.data_from_rfid = data[6:-1]
                 print(self.data_from_rfid)
         except Exception:
             pass
