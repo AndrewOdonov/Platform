@@ -24,18 +24,12 @@ def read_data_from_sensors(settings):
 
 def parse_data(string_data):
     """
-    The function parses data from module of control
-    :return: device_name_str, device_data
+    The function parses data from module of control and create dictionary data from sensors
+    :return: device_name_str, device_data, data_ID
     """
     device_name_str, device_data_str = string_data[1:-1].split('#')
     device_data = device_data_str.split('/')
     data_ID = {device_name_str: device_data}
     return device_name_str, device_data, data_ID
 
-# def create_dict_data_from_sensors(device_name_str, device_data):
-#     """
-#     Create dictionary of data from sensors
-#     :return: data_ID
-#     """
-#     data_ID = {device_name_str: device_data}
-#     return data_ID
+
