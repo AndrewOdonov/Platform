@@ -5,8 +5,8 @@ import sys
 import time
 
 """
-new formats of messages: data_from_ir = '<SI#1/34/58/120/2001>'
-                         data_from_us = '<SU#1/34/120/2001/45>'
+new formats of messages: data_from_ir = '<SI#1/34/58/120/201>'
+                         data_from_us = '<SU#1/34/120/201/45>'
                          turn_on_light = '<WFL#100>'
                          turn_on_uv_light = '<UFL#100>'
                          data_from_rfid = '<RFID#12345678920>'
@@ -25,7 +25,6 @@ class RobotControl:
     data_from_battery = None    # power of battery
     msg_servo = '<SERVO#-60>'
     """messages"""
-    MSG_TURN_ON_LIGHT = '<WFL#100>'    # message to turn on flashlight
     MSG_STOP_DRIVE = '<WHEEL#0/0>'    # message to stop robot
     MSG_TURN_OFF_LIGHT = '<WFL#0>'    # message to turn off flashlight
     direction_of_movements_robot = {
