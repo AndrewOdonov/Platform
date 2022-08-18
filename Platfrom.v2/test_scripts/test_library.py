@@ -23,7 +23,6 @@ class RobotControl:
     data_from_us = [None, None, None, None, None]    # data from us sensors
     data_from_rfid = None    # data from rfid reader
     data_from_battery = None    # power of battery
-    msg_servo = '<SERVO#-60>'
     """messages"""
     MSG_STOP_DRIVE = '<WHEEL#0/0>'    # message to stop robot
     MSG_TURN_OFF_LIGHT = '<WFL#0>'    # message to turn off flashlight
@@ -66,7 +65,7 @@ class RobotControl:
         settings.baudrate = 115200
         return settings
 
-    def resize_frame_and_delete_distortion(self, percent):
+    def resize_frame_and_delete_distorsion(self, percent):
         """
         resize frame and delete distorsion
         :return: mapx, mapy, resolution
@@ -152,7 +151,7 @@ class RobotControl:
             self.encode_and_send_msg(msg)
         except KeyError:
             print('Check the spelling of the word:', moving)
-            self.encode_and_send_msg(self.MSG_STOP_DRIVING)
+            self.encode_and_send_msg(self.MSG_STOP_DRIVE)
             sys.exit()
 
     def stop_platform(self):
@@ -160,7 +159,7 @@ class RobotControl:
         stop movement of robot
         :return:
         """
-        self.encode_and_send_msg(self.MSG_STOP_DRIVING)
+        self.encode_and_send_msg(self.MSG_STOP_DRIVE)
 
     def turn_on_flashlight(self, brightness):
         """
